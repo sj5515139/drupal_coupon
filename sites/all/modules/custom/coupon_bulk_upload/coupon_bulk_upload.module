@@ -1,0 +1,121 @@
+<?php
+
+/**
+ *Implements hook_menu()
+ */
+function coupon_bulk_upload_menu(){
+	$items = array();
+	
+	//Coupon Bulk Upload Menus Items...................................................................
+	$items['admin/coupan/bulk_upload'] = array(
+		'title' => t('Bulk Upload'),
+		'description' => t('Bulk Upload data for the coupans.'),
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('coupon_bulk_upload'),
+		'access arguments' => array('add_coupan'),
+	);
+	
+	$items['admin/coupan/bulk_upload/coupon'] = array(
+		'title' => t('Coupon'),
+		'description' => t('Add coupons by bulk upload.'),
+		'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('coupan_bulk_upload'),
+		'file' => 'coupan_bulk_upload_form.admin.inc',
+		'file path' => drupal_get_path('module','coupon_bulk_upload').'/includes',
+		'weight' => '11',
+	);
+	
+	$items['admin/coupan/bulk_upload/category'] = array(
+		'title' => t('Category'),
+		'description' => t('Add category data by bulk upload.'),
+		'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('category_bulk_upload'),
+		'file' => 'category_bulk_upload_form.admin.inc',
+		'file path' => drupal_get_path('module','coupon_bulk_upload').'/includes',
+		'weight' => '12',
+	);
+	
+	$items['admin/coupan/bulk_upload/sub_category'] = array(
+		'title' => t('Sub Category'),
+		'description' => t('Add sub_category data by bulk upload.'),
+		'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('sub_category_bulk_upload'),
+		'file' => 'sub_category_bulk_upload_form.admin.inc',
+		'file path' => drupal_get_path('module','coupon_bulk_upload').'/includes',
+		'weight' => '13',
+	);
+	
+	$items['admin/coupan/bulk_upload/store'] = array(
+		'title' => t('Store'),
+		'description' => t('Add store data by bulk upload.'),
+		'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('store_bulk_upload'),
+		'file' => 'store_bulk_upload_form.admin.inc',
+		'file path' => drupal_get_path('module','coupon_bulk_upload').'/includes',
+		'weight' => '14',
+	);
+	
+	$items['admin/coupan/bulk_upload/location'] = array(
+		'title' => t('Location'),
+		'description' => t('Add location data by bulk upload.'),
+		'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('location_bulk_upload'),
+		'file' => 'location_bulk_upload_form.admin.inc',
+		'file path' => drupal_get_path('module','coupon_bulk_upload').'/includes',
+		'weight' => '15',
+	);
+	
+	$items['admin/coupan/bulk_upload/bank'] = array(
+		'title' => t('Bank'),
+		'description' => t('Add bank data by bulk upload.'),
+		'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('bank_bulk_upload'),
+		'file' => 'bank_bulk_upload_form.admin.inc',
+		'file path' => drupal_get_path('module','coupon_bulk_upload').'/includes',
+		'weight' => '16',
+	);
+	
+	$items['admin/coupan/bulk_upload/loc_cat'] = array(
+		'title' => t('Location Category'),
+		'description' => t('Add Location Category data by bulk upload.'),
+		'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('loc_cat_bulk_upload'),
+		'file' => 'loc_cat_bulk_upload_form.admin.inc',
+		'file path' => drupal_get_path('module','coupon_bulk_upload').'/includes',
+		'weight' => '17',
+	);
+	
+	$items['admin/coupan/bulk_upload/loc_str'] = array(
+		'title' => t('Location Store'),
+		'description' => t('Add Location Store data by bulk upload.'),
+		'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('loc_str_bulk_upload'),
+		'file' => 'loc_str_bulk_upload_form.admin.inc',
+		'file path' => drupal_get_path('module','coupon_bulk_upload').'/includes',
+		'weight' => '18',
+	);
+	
+	return $items;
+}
+
+function coupon_bulk_upload($form, $form_state){
+	$menu = "management"; // your menu name
+	$level = 4; // menu level to print
+	$attributes = array('class' => array('links', 'site-menu'));
+	//print theme('links', array('links' => menu_navigation_links($menu, $level-1), 'attributes' => $attributes));
+	
+	$form['markup'] = array(
+		'#type' => 'markup',
+		'#markup' => theme('links', array('links' => menu_navigation_links($menu, $level-1), 'attributes' => $attributes)),
+	);
+	
+	return $form;
+}

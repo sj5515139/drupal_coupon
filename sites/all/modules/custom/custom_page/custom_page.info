@@ -1,0 +1,6 @@
+name = Custom Pages
+description = This Module creates custom pages for the system.
+core = 7.x
+package = Custom Modules
+files[] = custom_page.module
+stylesheets[all][] = custom_page.css

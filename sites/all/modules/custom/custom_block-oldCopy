@@ -1,0 +1,1049 @@
+<?php
+
+/**
+ *Implements hook_permission()
+ */
+function custom_block_permission(){
+  return array(
+    // 'client_register' => array(
+      // 'title' => t('Register a Client.'),
+      // 'description' => t('For both Client and Admin.'),
+    // ),
+	);
+}
+
+/**
+ *Calling the theme function for the form - hook_theme().
+ */
+function custom_block_theme() {
+  return array(
+    // 'pending_users_table' => array(
+      // // The renderable element is the form.
+      // 'render element' => 'form',
+    // ),
+	);
+}
+
+/**
+ *Implements hook_menu()
+ */
+function custom_block_menu(){
+  $items = array();
+	
+	// $items['admin/client'] = array(
+	  // 'title' => t('Client'),
+	  // 'description' => t('Manage the client and its details.'),
+	  // 'page callback' => 'drupal_get_form',
+		// 'access arguments' => array('approve_client'),
+		// 'page arguments' => array('client_main_form'),
+		// 'file' => 'client_main_form.admin.inc',
+    // 'file path' => drupal_get_path('module','create_user').'/includes',
+		// 'theme callback' => 'variable_get',
+    // 'theme arguments' => array('admin_theme'),
+	// );
+	
+	return $items;
+	
+}
+
+/**
+ *Implements hook_block_info()
+ */
+function custom_block_block_info(){
+	
+	$block['category_menu_block'] = array(
+		'info' => t('Category Menu Block'),
+		'cache' => DRUPAL_NO_CACHE,
+	);
+	$block['exxample_block'] = array(
+		'info' => t('Example Of Custom Block'),
+		'cache' => DRUPAL_NO_CACHE,
+	);
+	$block['top_store_block'] = array(
+		'info' => t('Top Store Block'),
+		'cache' => DRUPAL_NO_CACHE,
+	);
+	$block['homepage_coupun_block'] = array(
+		'info' => t('Homepage Coupon Block'),
+		'cache' => DRUPAL_NO_CACHE,
+	);
+	$block['custom_footer_block'] = array(
+		'info' => t('Custom Footer Block'),
+		'cache' => DRUPAL_NO_CACHE,
+	);
+	
+	db_merge('block')
+  ->key(array('theme' => 'adminimal_theme', 'delta' => 'category_menu_block', 'module' => 'custom_block'))
+  ->fields(array(
+    'region' => '',
+    'pages' => '',
+    'status' => 1,
+    'visibility' => 1,
+		'title' => '<none>',
+  ))
+  ->execute();
+	
+	db_merge('block')
+  ->key(array('theme' => 'adminimal_theme', 'delta' => 'example_block', 'module' => 'custom_block'))
+  ->fields(array(
+    'region' => '',
+    'pages' => '',
+    'status' => 1,
+    'visibility' => 1,
+		'title' => '<none>',
+  ))
+  ->execute();
+	
+	db_merge('block')
+  ->key(array('theme' => 'adminimal_theme', 'delta' => 'top_store_block', 'module' => 'custom_block'))
+  ->fields(array(
+    'region' => '',
+    'pages' => '',
+    'status' => 1,
+    'visibility' => 1,
+		'title' => '<none>',
+  ))
+  ->execute();
+	
+	db_merge('block')
+  ->key(array('theme' => 'adminimal_theme', 'delta' => 'homepage_coupun_block', 'module' => 'custom_block'))
+  ->fields(array(
+    'region' => '',
+    'pages' => '',
+    'status' => 1,
+    'visibility' => 1,
+		'title' => '<none>',
+  ))
+  ->execute();
+	
+	db_merge('block')
+  ->key(array('theme' => 'adminimal_theme', 'delta' => 'custom_footer_block', 'module' => 'custom_block'))
+  ->fields(array(
+    'region' => '',
+    'pages' => '',
+    'status' => 1,
+    'visibility' => 1,
+		'title' => '<none>',
+  ))
+  ->execute();
+	
+	return $block;
+}
+
+/**
+ * Implements hook_block_configure().
+ */
+function custom_block_block_configure($delta='') {
+	
+	$form = array();
+  
+  switch($delta) {
+    case 'example_block' :
+      // Text field form element
+      $form['text_body'] = array(
+        '#type' => 'text_format',
+				'#format' => 'full_html',
+        '#title' => t('Enter your text here in WYSIWYG format'),
+        '#default_value' => variable_get('example_block_variable', ''),
+      );
+
+      // File selection form element
+      // $form['file'] = array(
+        // '#name' => 'block_image',
+        // '#type' => 'managed_file',
+        // '#title' => t('Choose an Image File'),
+        // '#description' => t('Select an Image for the custom block.  Only *.gif, *.png, *.jpg, and *.jpeg images allowed.'),
+        // '#default_value' => variable_get('block_image_fid', ''),
+        // '#upload_location' => 'public://block_image/',
+        // '#upload_validators' => array(
+          // 'file_validate_extensions' => array('gif png jpg jpeg'),
+        // ),
+      // );
+      break;
+  }
+  return $form;
+}
+
+/**
+ * Implements hook_block_save().
+ */
+function custom_block_block_save($delta = '', $edit = array()) {
+  switch($delta) {
+    case 'category_list_block' :
+      // Saving the WYSIWYG text      
+      variable_set('example_block_variable', $edit['text_body']['value']);
+
+      // Saving the image file, setting it to a permanent state, setting a FID variable
+      // $file = file_load($edit['file']);
+      // $file->status = FILE_STATUS_PERMANENT;
+      // file_save($file);
+      // $block = block_load('custom_block', $delta);
+      // file_usage_add($file, 'custom_block', 'block', $block->bid);
+      // variable_set('block_image_fid', $file->fid);
+      break;
+  }
+}
+
+/**
+ *Implements hook_block_view()
+ */
+function custom_block_block_view($delta = ''){
+	global $base_url;
+	$rid = array();
+	$output = '';
+	
+	switch($delta){
+		case 'category_menu_block' :
+				drupal_add_css('
+					#cat-menu{
+						padding:10px;
+						padding-left:0px;
+						width:100%;
+					}
+					#cat-menu-col{
+						padding:0px;
+					}
+					#cat-menu-col ul li{
+						list-style-type:none;
+					}
+				
+				', 'inline');
+				$output = '';
+				$output .= '<div id="cat-menu" class="container">';
+				$category = db_query("SELECT * FROM coupan_category");
+				foreach($category as $cat){
+					$cat_url = $base_url.'/category/'.$cat->id;
+					$output .= '<div id="cat-menu-col" class="col-sm-3" style="float:left;">';
+					$output .= '<ul>';
+					$output .= '<li><a href="'.$cat_url.'" style="color:green;">'.$cat->title.'</a></li>';
+					$sub_category = db_query("SELECT * FROM coupan_sub_category WHERE cid = :cid;", array(':cid' => $cat->id));
+					foreach($sub_category as $sc){
+						$sc_url = $base_url.'/sub_category/'.$sc->scid;
+						$output .= '
+							<li><a href="'.$sc_url.'" style="color:grey;">'.$sc->title.'</a></li>
+							
+						';
+					}
+					$output .= '
+						</ul>
+						</div>
+					';
+				}
+				$output .= '</div>';
+				
+				
+				$block['subject'] = 'Category Menu Block';
+				$block['content'] = $output;
+				return $block;
+			
+		break;
+		case 'example_block' :
+				$block['subject'] = 'Category List Block';
+				$block['content'] = example_block_view();
+				return $block;
+			
+		break;
+		case 'top_store_block' :
+		
+				drupal_add_css('
+					#top-store{
+						padding-top:10px;
+						float:left;
+						width:100%;
+					}
+					#top-store ul li{
+						list-style-type:none;
+						float:left;
+						padding:20px;
+						background:white;
+						margin: 0px 0px 20px 90px;
+					}
+					#top-store ul li img{
+						width:150px;
+						height:50px;
+					}
+					
+				
+				', 'inline');
+				
+				$src = "https://upload.wikimedia.org/wikipedia/commons/9/90/FreeCharge_Logo.png";
+				$output .= '
+					<div id="top-store">
+						<center><h1><b>Top Stores in Coupon Store</b></h1></center>
+						<ul>
+							<li><a href = "#"><img src="'.$src.'"></img></a></li>
+							<li><a href = "#"><img src="'.$src.'"></img></a></li>
+							<li><a href = "#"><img src="https://qph.ec.quoracdn.net/main-qimg-e61922a041b88f6de69505f19e150a57"></img></a></li>
+							<li><a href = "#"><img src="https://d3uqm14ppr8tkw.cloudfront.net/images/p/paytm-coupons_logo.png"></img></a></li>
+							<li><a href = "#"><img src="'.$src.'"></img></a></li>
+							<li><a href = "#"><img src="https://d3uqm14ppr8tkw.cloudfront.net/images/p/paytm-coupons_logo.png"></img></a></li>
+							<li><a href = "#"><img src="'.$src.'"></img></a></li>
+							<li><a href = "#"><img src="'.$src.'"></img></a></li>
+						</ul>
+					</div>
+				';
+				
+				$block['subject'] = 'Top Store Block';
+				$block['content'] = $output;
+				return $block;
+			
+		break;
+		case 'homepage_coupun_block' :
+		
+				$block['subject'] = 'Homepage Coupon Block';
+				$block['content'] = drupal_get_form('homepage_coupun_block_form');
+				return $block;
+			
+		break;
+		case 'custom_footer_block' :
+		
+				$block['subject'] = 'Custom Footer Block';
+				$block['content'] = drupal_get_form('custom_footer_block_form');
+				return $block;
+			
+		break;
+	}
+}
+
+/*
+**CallBack Function homepage_coupun_block_form().........................
+*/
+function homepage_coupun_block_form($form, &$form_state){
+	global $base_url;
+	$tab_list = array(
+		'Popular' => '<i class="fa fa-smile-o" aria-hidden="true"></i>',
+		'Recharge' => '<i class="fa fa-inr" aria-hidden="true"></i>',
+		'Travel' => '<i class="fa fa-suitcase" aria-hidden="true"></i>',
+		'Shooping' => '<i class="fa fa-shopping-bag" aria-hidden="true"></i>',
+		'Food' => '<i class="fa fa-spoon" aria-hidden="true"></i>',
+		'Electronics' => '<i class="fa fa-mobile" aria-hidden="true"></i>'
+	);
+	
+	
+	$output = '';
+	// Css For Tabs And Tabs Content.........................
+	$output .= '
+		
+		<style>
+			#main-div{
+				padding:40px;
+			}
+			
+			/* Style the tab */
+			.tab {
+				overflow: hidden;
+				background-color: #fff;
+				width:100%;
+			}
+
+			/* Style the buttons inside the tab */
+			.tab a {
+				background-color: inherit;
+				float: left;
+				font-size:16px;
+				width:16.66%;
+				cursor: pointer;
+				vertical-align:top;
+				text-align:center;
+				padding-top:20px;
+				padding-bottom:20px;
+				transition: 0.1s;
+				height: 100%;
+				border-top:4px solid #fff;
+			}
+
+			/* Change background color of buttons on hover */
+			.tab a:hover {
+				background-color: #999966;
+				color:white;
+				border-top:4px solid #999966;
+			}
+
+			/* Create an active/current tablink class */
+			.tab a.active{
+				border-top:4px solid #206040;
+			}
+			
+			/* Style the tab content */
+			.tabcontent {
+				display: none;
+				padding: 20px 10px;
+			}
+			.tabcontent.default {
+				display: block;
+			}
+			.tabcontent li{
+				float:left;
+				list-style-type:none;
+				background:white;
+				margin:10px;
+				width:290px;
+			}
+			
+			.tabcontent li:hover{
+				box-shadow: 0 1px 10px #c3c3c3;
+				transition: all .2s ease-in-out;
+				-moz-transform: scale(1.1);
+				-webkit-transform: scale(1.1);
+				transform: scale(1.1);
+			}
+			
+			.coupon-image{
+				width:100%;
+				height:100px;
+				overflow:hidden;
+				padding-top:20px;
+				text-align:center;
+				vertical-align:middle;
+			}
+			
+			.coupon-header{
+				padding-left: 5px;
+				padding-right: 5px;
+			}
+			.coupon-left{
+				float:left; width:70%; overflow:hidden;
+			}
+			.coupon-left p{
+				width:100%; overflow:hidden; font-size: 18px;color: #999966;line-height: 24px;margin:0%;
+			}
+			.coupon-right{
+				float:right; width:30%; overflow:hidden;
+			}
+			.coupon-right p{
+				float:right; font-size: 14px;
+			}
+			
+			.coupon-title{
+				padding-top:20px; overflow: hidden;
+			}
+			
+			.coupon-title #title1{
+				padding-left: 10px; font-size: 18px; font-weight: bold;
+			}
+			.coupon-title #title2{
+				padding-left: 10px; overflow: hidden; font-weight: bold;
+			}
+			
+			.coupon-link{
+				background-color: #206040;text-align: center;padding: 18px;font-size:16px;
+			}
+			.coupon-link a{
+				color:white;
+			}
+			
+			.full{
+				display:none;
+				width:100%;
+				margin-top:4%;
+				position: relative;
+				overflow-y: scroll;
+				max-height: 100%;
+				border: 1px solid grey;
+				border-top:none;
+				background: white;
+				box-shadow: -1px 2px 0.2em grey;
+			}
+			
+			.single .coupon-title{
+				margin-top:4%;
+			}
+			.full .each-coupon:hover{
+				background:rgba(187,187,187,0.18);
+			}
+			
+			/* For Scroll Bars................
+			/* Scrollbar styles */
+			.full::-webkit-scrollbar {
+				width: 5px;
+			}
+
+			.full::-webkit-scrollbar-thumb {
+				background: #999966;
+			}
+
+			.full::-webkit-scrollbar-thumb:hover {
+				background: #5c5c3d;  
+			}
+
+			
+			.single{
+				display:block;
+				overflow: hidden;
+				width:100%;
+			}
+			
+			#offer-link{
+				cursor:pointer;
+				color:#206040;
+			}
+			
+			.arrow-up {
+				width: 0; 
+				height: 0; 
+				border-left: 5px solid transparent;
+				border-right: 5px solid transparent;
+				border-bottom: 5px solid #f00;
+			}
+
+			.arrow-down {
+				width: 0; 
+				height: 0; 
+				border-left: 5px solid transparent;
+				border-right: 5px solid transparent;
+				border-top: 5px solid #f00;
+			}
+
+			
+			
+		</style>
+		
+	';
+	
+	$form['#attached']['js'] = array(
+		drupal_get_path('module', 'custom_block') . '/custom_block.js',
+	);
+	
+	// JS For opening tab content.......................
+	$output .= '
+		
+		<script type="text/javascript">
+			function opentab(evt, tabid) {
+				
+				// Declare all variables
+				var i, tabcontent, tablinks;
+				
+				// Get all elements with class="tabcontent" and hide them
+				tabcontent = document.getElementsByClassName("tabcontent");
+				for (i = 0; i < tabcontent.length; i++) {
+						tabcontent[i].style.display = "none";
+				}
+				
+				// Get all elements with class="tablinks" and remove the class "active"
+				tablinks = document.getElementsByClassName("tablinks");
+				for (i = 0; i < tablinks.length; i++) {
+						tablinks[i].className = tablinks[i].className.replace(" active", "");
+				}
+				
+				// Show the current tab, and add an "active" class to the button that opened the tab
+				document.getElementById(tabid).style.display = "block";
+				evt.currentTarget.className += " active";
+				
+			}
+			document.getElementById("default_tab").click();
+		
+			function change_arrow(evt, linkId, singleDivId, fullDivId){
+				var coupanDiv = document.getElementById("coupon-list");
+				var NAME = document.getElementById(linkId);
+				
+				if (NAME.className === "fa fa-caret-down"){
+					
+					NAME.className="fa fa-caret-up";
+					document.getElementById(singleDivId).style.display = "none";
+					document.getElementById(fullDivId).style.display = "block";
+					
+				}
+				else{
+					NAME.className="fa fa-caret-down";
+					document.getElementById(singleDivId).style.display = "block";
+					document.getElementById(fullDivId).style.display = "none";
+					
+				}
+			}   
+			
+		</script>
+		
+		<script type="text/javascript">
+			
+			(function ($) {
+				$(document).ready(function(){
+					
+					$("#offer-link").click(function(){
+							$("#full").toggle();
+					});
+					
+				});
+			})(jQuery);
+			
+		</script>
+		
+	';
+	
+	$output .= '
+		<div id="main-div">
+			<h3>Best Offers</h3>
+			<div class="tab">
+	';
+	
+	reset($tab_list);
+	$first_tab = key($tab_list);
+	foreach($tab_list as $tab=>$icon){
+		if($first_tab == $tab){
+			$output .= '<a class="tablinks" id="default_tab" onclick="opentab(event, '."'$tab'".')"><h3>'.$icon.'</h3>'.$tab.'</a>';
+		}else{
+			$output .= '<a class="tablinks" onclick="opentab(event, '."'$tab'".')"><h3>'.$icon.'</h3>'.$tab.'</a>';
+		}
+	}
+	
+	$output .= '
+		</div>
+	';
+	$num=array('1'=>'1','2'=>'2','3'=>'3','4'=>'4','5'=>'5','6'=>'6','7'=>'7','8'=>'8');
+	foreach($tab_list as $tab=>$icon){
+		if($first_tab == $tab){
+			
+			$query = db_query("SELECT * FROM coupan_store LIMIT 8");
+			
+			$output .= '<div id="'.$tab.'" class="tabcontent default">';
+				foreach($query as $q){
+					$store_title = $q->title;
+					$coupons = array();
+					$store_coupon = db_query("SELECT * FROM coupan WHERE sid = :sid;", array(':sid' => $q->sid));
+					foreach($store_coupon as $sc){
+						$coupons[] = $sc->coupan_id;
+					}
+					
+					$coupons = count($coupons);
+					
+					$link_id = "arrow-$store_title";
+					$single_div_id = "coupon-list-single-$store_title";
+					$full_div_id = "coupon-list-full-$store_title";
+					$output .= '<li>';
+						if($q->image_id != NULL){
+							$file = file_load($q->image_id);
+							$src = image_style_url('medium', $file->uri);
+						}else{
+							$src = "$base_url/sites/default/files/no_image.png";
+						}								
+						
+						$output .= '
+							<div class="coupon-image">
+								<img src="'.$src.'" width=""></img>
+							</div>
+							<div class="coupon-header">
+								<div class="coupon-left">';
+									$output .= '<p>'.$store_title.' Coupons</p>';
+								$output .= ' </div>
+								<div class="coupon-right">
+									<i class="fa fa-caret-down" style="line-height: 29px; float: right;" aria-hidden="true" id="'.$link_id.'" onclick="change_arrow(event, '."'$link_id'".', '."'$single_div_id'".', '."'$full_div_id'".')"><p id="offer-link"><span>&nbsp;'.$coupons.' Offers</span></p></i>
+								</div>
+							</div>
+						';
+						
+						$store_coupon = db_query("SELECT * FROM coupan WHERE sid = :sid LIMIT 1;", array(':sid' => $q->sid));
+						foreach($store_coupon as $sc){
+							
+							$output .= '
+								<div id="coupon-list-single-'.$store_title.'" class="single">
+									<div class = "each-coupon">
+										<div class = "coupon-title">
+											<div id="title1">';
+												$output .= '<p>'.$sc->offer.'</p>';
+											$output .= '</div>
+											<div id="title2">';
+												$output .= '<p>'.$sc->title.'</p>';
+											$output .= '</div>
+										</div>
+										<div class = "coupon-link">';
+											if($sc->type == 'Deal'){
+												$output .= '<a href="'.$q->link.'">Get Deal</a>';
+											}else{
+												$output .= '<a href="'.$q->link.'">Show Coupon Code</a>';
+											}
+										$output .= '</div>
+									</div>
+								</div>
+							';
+						}
+						
+						$output .= '<div id="coupon-list-full-'.$store_title.'" class="full">';
+							$store_coupon = db_query("SELECT * FROM coupan WHERE sid = :sid LIMIT 3;", array(':sid' => $q->sid));
+							foreach($store_coupon as $sc){
+								$output .= '
+									<div class = "each-coupon">
+										<div class = "coupon-title">
+											<div id="title1">';
+												$output .= '<p>'.$sc->offer.'</p>';
+											$output .=' </div>
+											<div id="title2">';
+												$output .= '<p>'.$sc->title.'</p>';
+											$output .= '</div>
+										</div>
+										<div class = "coupon-link">';
+											if($sc->type == 'Deal'){
+												$output .= '<a href="'.$q->link.'">Get Deal</a>';
+											}else{
+												$output .= '<a href="'.$q->link.'">Show Coupon Code</a>';
+											}
+										$output .='</div>
+									</div>
+								';
+							}
+						$output .= '</div>';
+					$output .= '</li>';
+				}
+			
+			$output .= '</div>';
+			
+		}else{
+			
+			$query = db_query("SELECT * FROM coupan_category WHERE title =:t",array(':t' => $tab));
+			foreach($query as $q){
+				$cid = $q->id;
+			}
+			$stores = array();
+			$query = db_query("SELECT * FROM coupan_store");
+			foreach($query as $q){
+				$store_cid = $q->cid;
+				$store_cid = explode(',',$store_cid);
+				if(in_array($cid, $store_id)){
+					$stores[] = $q->sid;
+				}
+			}
+			$stores = array_slice($stores,0,8,true);
+			
+			$output .= '<div id="'.$tab.'" class="tabcontent">';
+				foreach($stores as $st){
+				$query = db_query("SELECT * FROM coupan_store WHERE sid=:sid;", array(':sid' => $st));
+				foreach($query as $q){
+					$store_title = $q->title;
+					$coupons = array();
+					$store_coupon = db_query("SELECT * FROM coupan WHERE sid = :sid;", array(':sid' => $q->sid));
+					foreach($store_coupon as $sc){
+						$coupons[] = $sc->coupan_id;
+					}
+					
+					$coupons = count($coupons);
+					
+					$link_id = "arrow-$store_title";
+					$single_div_id = "coupon-list-single-$store_title";
+					$full_div_id = "coupon-list-full-$store_title";
+					$output .= '<li>';
+						if($q->image_id != NULL){
+							$file = file_load($q->image_id);
+							$src = image_style_url('medium', $file->uri);
+						}else{
+							$src = "$base_url/sites/default/files/no_image.png";
+						}								
+						
+						$output .= '
+							<div class="coupon-image">
+								<img src="'.$src.'" width=""></img>
+							</div>
+							<div class="coupon-header">
+								<div class="coupon-left">';
+									$output .= '<p>'.$store_title.' Coupons</p>';
+								$output .= ' </div>
+								<div class="coupon-right">
+									<i class="fa fa-caret-down" style="line-height: 29px; float: right;" aria-hidden="true" id="'.$link_id.'" onclick="change_arrow(event, '."'$link_id'".', '."'$single_div_id'".', '."'$full_div_id'".')"><p id="offer-link"><span>&nbsp;'.$coupons.' Offers</span></p></i>
+								</div>
+							</div>
+						';
+						
+						$store_coupon = db_query("SELECT * FROM coupan WHERE sid = :sid LIMIT 1;", array(':sid' => $q->sid));
+						foreach($store_coupon as $sc){
+							
+							$output .= '
+								<div id="coupon-list-single-'.$store_title.'" class="single">
+									<div class = "each-coupon">
+										<div class = "coupon-title">
+											<div id="title1">';
+												$output .= '<p>'.$sc->offer.'</p>';
+											$output .= '</div>
+											<div id="title2">';
+												$output .= '<p>'.$sc->title.'</p>';
+											$output .= '</div>
+										</div>
+										<div class = "coupon-link">';
+											if($sc->type == 'Deal'){
+												$output .= '<a href="'.$q->link.'">Get Deal</a>';
+											}else{
+												$output .= '<a href="'.$q->link.'">Show Coupon Code</a>';
+											}
+										$output .= '</div>
+									</div>
+								</div>
+							';
+						}
+						
+						$output .= '<div id="coupon-list-full-'.$store_title.'" class="full">';
+							$store_coupon = db_query("SELECT * FROM coupan WHERE sid = :sid LIMIT 3;", array(':sid' => $q->sid));
+							foreach($store_coupon as $sc){
+								$output .= '
+									<div class = "each-coupon">
+										<div class = "coupon-title">
+											<div id="title1">';
+												$output .= '<p>'.$sc->offer.'</p>';
+											$output .=' </div>
+											<div id="title2">';
+												$output .= '<p>'.$sc->title.'</p>';
+											$output .= '</div>
+										</div>
+										<div class = "coupon-link">';
+											if($sc->type == 'Deal'){
+												$output .= '<a href="'.$q->link.'">Get Deal</a>';
+											}else{
+												$output .= '<a href="'.$q->link.'">Show Coupon Code</a>';
+											}
+										$output .='</div>
+									</div>
+								';
+							}
+						$output .= '</div>';
+					$output .= '</li>';
+				}}
+			
+			$output .= '</div>';
+			
+			// $output .= '
+				// <div id="'.$tab.'" class="tabcontent">
+					// <h3>Paris</h3>
+					// <p>London is the capital city of England.</p>
+				// </div>
+			// ';
+		}
+		
+	}
+	
+	$output .= '
+		
+		</div>
+	';
+	
+	
+	$form['markup'] = array(
+		'#type' => 'markup',
+		'#markup' => $output,
+	);
+	
+	return $form;
+}
+
+/*
+**CallBack Function homepage_coupun_block_form().........................
+*/
+function custom_footer_block_form($form, &$form_state){
+	global $base_url;
+	$footer_img = $base_url.'/sites/default/files/bg-image.png';
+	$footer_bg_img = $base_url.'/sites/default/files/bgFooter.jpg';
+	
+	drupal_add_css('
+		
+		.social-icons{
+			color:#3a88d7;
+			
+		}
+		.social-icons:hover{
+			color:#999966;
+		}
+		
+		.footer1{
+			background-image: url('.$footer_img.'); width:100%; height:400px; float:left;
+		}
+		.footer1-icons{
+			padding:20px; text-align:right;
+		}
+		
+		.footer2, .footer2 a{
+			color:#999966;
+		}
+		.footer2 a:hover{
+			color:white;
+		}
+		
+		.footer2-links{
+			display:table;padding:20px;color:white; float:left;
+		}
+		
+		.footer2-links ul{
+			float:left;
+		}
+		.footer2-links ul li{
+			padding-bottom:5px;
+		}
+		
+		.footer2-email{
+			padding:20px;
+			width:375px;
+			float:right;
+		}
+		.footer2-email p{
+			color:white;
+		}
+		
+		.footer3{
+			padding-top:10px;
+			padding-bottom:10px;
+			background: #206040; width:100%;
+			color:white;
+			font-size:14px;
+			text-align:center;
+			float:left;
+		}
+		.footer3 p{
+			margin:0;
+		}
+		.footer3 a{
+			color:#999966;
+		}
+		
+		.textbox { 
+			background: white;
+			background-image: url("http://www.iconsdb.com/icons/download/color/206040/message-outline-24.ico");
+			background-repeat: no-repeat;
+			background-position: 7px 7px;
+			border-radius: 5px; 
+			box-shadow: 0 0 5px #333; 
+			padding-left:35px;
+			outline: none; 
+			height:35px; 
+			width: 350px; 
+		} 
+		
+		.footer2-email button{
+			padding:10px;
+			padding-right:0px;
+			width: 370px; 
+			font-size:16px;
+			background:#999966;
+			border:none;
+			border
+			box-shadow:0;
+			color:white;
+		}
+		
+	', 'inline');
+	
+	$output ='';
+	$output .= '
+	
+		<div class="footer1">
+			<div class="footer1-icons">
+				<span class="fa-stack fa-lg fa-2x">
+					<a href="#">
+						<i class="fa fa-circle fa-stack-2x social-icons"></i>
+						<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+					</a>	
+				</span>
+				<span class="fa-stack fa-lg fa-2x">
+					<a href="#">
+						<i class="fa fa-circle fa-stack-2x social-icons"></i>
+						<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+					</a>	
+				</span>
+				<span class="fa-stack fa-lg fa-2x">
+					<a href="#">
+						<i class="fa fa-circle fa-stack-2x social-icons"></i>
+						<i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+					</a>	
+				</span>
+				<span class="fa-stack fa-lg fa-2x">
+					<a href="#">
+						<i class="fa fa-circle fa-stack-2x social-icons"></i>
+						<i class="fa fa-instagram fa-stack-1x fa-inverse"></i>
+					</a>	
+				</span>
+				<span class="fa-stack fa-lg fa-2x">
+					<a href="#">
+						<i class="fa fa-circle fa-stack-2x social-icons"></i>
+						<i class="fa fa-pinterest fa-stack-1x fa-inverse"></i>
+					</a>	
+				</span>
+			</div>
+			
+			<div class="footer2">
+				<div class="footer2-links">
+					<ul style="padding-right:40px;">
+						<p>About</p>
+						<li><a>About Us</a></li>
+						<li><a>Terms & Conditions</a></li>
+						<li><a>Privacy</a></li>
+					</ul>
+					<ul style="padding-right:40px;">
+						<p>Stores</p>
+						<li><a>Freecharge</a></li>
+						<li><a>Make My Trip</a></li>
+						<li><a>Paytm</a></li>
+						<li><a>Book My Show</a></li>
+						<li><a>Snapdeal</a></li>
+					</ul>
+					<ul style="padding-right:40px;">
+						<p>Categories</p>
+						<li><a>Recharge</a></li>
+						<li><a>Fashion</a></li>
+						<li><a>Travel</a></li>
+						<li><a>Food</a></li>
+						<li><a>Electronics</a></li>
+					</ul>
+					<ul style="padding-right:40px;">
+						<p>Contact Us</p>
+						<li><a>Write to Us</a></li>
+						<li><a>Partner With Us</a></li>
+						<li><a>Blog</a></li>
+					</ul>
+				</div>
+			</div>
+			
+			<div class="footer2-email">
+				<p>Get Best Deals On The Internet Delivered Right In Your Inbox. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed luctus enim rhoncus suscipit euismod. Sed ex justo, bibendum eget nunc ut, tempus pretium magna. Fusce eros nisl, semper at interdum at, bibendum nec nisl.</p>
+				<input class="textbox" type="text"><br><br>
+				<button type="submit">Subscribe to Our Latest Offer Now</button>
+			</div>
+		</div>
+		<div class="footer3" style="">
+			<p>© 2017. All Rights Reserved. Designed By <a href="www.intadigit.com">InstaDigit.</a></p>
+		</div>
+		
+	';
+	
+	
+	
+	
+	$form['markup'] = array(
+		'#type' => 'markup',
+		'#markup' => $output,
+	);
+	
+	return $form;
+}
+
+
+/*
+**CallBack Function example_block_view().........................
+*/
+function example_block_view(){
+	$block = array();
+
+  // Capture the image file path and form into HTML with attributes
+  $image_file = file_load(variable_get('block_image_fid', ''));
+  $image_path = '';
+
+  if (isset($image_file->uri)) {
+    $image_path = $image_file->uri;
+  }
+
+  $image = theme_image(array(
+    'path' => ($image_path),
+    'alt' => t('Image description here.'),
+    'title' => t('This is our block image.'),
+    'attributes' => array('class' => 'class_name'),
+  ));
+
+  // Capture WYSIWYG text from the variable
+  $text = variable_get('example_block_variable', '');
+
+  // Block output in HTML with div wrapper
+  $block = array(
+    // 'image' => array(
+			// '#prefix' => '',
+			// '#type' => 'markup',
+			// '#markup' => $image,
+		// ),
+		'message' => array(
+			'#type' => 'markup',
+			'#markup' => $text,
+			'#suffix' => '',
+		),
+	);
+	return $block;
+}

@@ -1,0 +1,294 @@
+<?php
+
+/**
+ *Implements hook_permission()
+ */
+function custom_page_permission(){
+  return array(
+    // 'add_coupan' => array(
+      // 'title' => t('Add Coupans.'),
+      // 'description' => t('For Admin Only.'),
+    // ),
+	);
+}
+
+/**
+ *Calling the theme function for the form - hook_theme().
+ */
+function custom_page_theme() {
+  return array(
+    // 'pending_users_table' => array(
+      // // The renderable element is the form.
+      // 'render element' => 'form',
+    // ),		
+		
+	);
+}
+
+/**
+ * Implements hook_admin_paths()
+ */
+function custom_page_admin_paths() {
+	$paths = array(
+		'comment/*' => TRUE,
+	);
+	return $paths;
+}
+
+/**
+ *Implements hook_menu()
+ */
+function custom_page_menu(){
+  $items = array();
+	
+	//Coupons Menus Items...................................................................
+	$items['home'] = array(
+    'title' => 'Home',
+    'page callback' => 'drupal_get_form',
+    'access callback' => TRUE,
+		'page arguments' => array('homepage_form'),
+		'file' => 'homepage_form.admin.inc',
+    'file path' => drupal_get_path('module','custom_page').'/includes',
+  );
+	
+	$items['category'] = array(
+    'title' => 'Category',
+    'page callback' => 'drupal_get_form',
+    'access callback' => TRUE,
+		'page arguments' => array('category_form'),
+		'file' => 'category_form.admin.inc',
+    'file path' => drupal_get_path('module','custom_page').'/includes',
+  );
+	
+	$category = db_query("SELECT * FROM coupan_category");
+	foreach($category as $cat){
+		
+		$title = $cat->title.' Coupons';
+		if($cat->meta_title != NULL){
+			$page_title = $cat->meta_title;
+		}else{
+			$page_title = $title;
+		}
+		
+		$items['category/'.clean($cat->url_alias)] = array(
+			'title' => $page_title,
+			'page callback' => 'drupal_get_form',
+			'access callback' => TRUE,
+			'page arguments' => array('category_coupan_form',$cat->title),
+			'file' => 'category_coupan_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_page').'/includes',
+		);
+	}
+	
+	$sub_category = db_query("SELECT * FROM coupan_sub_category");
+	foreach($sub_category as $sc){
+		
+		$title = $sc->title.' Coupons';
+		if($sc->meta_title != NULL){
+			$page_title = $sc->meta_title;
+		}else{
+			$page_title = $title;
+		}
+		
+		$items['category/'.clean($sc->url_alias)] = array(
+			'title' => $page_title,
+			'page callback' => 'drupal_get_form',
+			'access callback' => TRUE,
+			'page arguments' => array('sub_category_coupan_form',$sc->title),
+			'file' => 'sub_category_coupan_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_page').'/includes',
+		);
+		
+	}
+	
+	$items['store'] = array(
+		'title' => 'Stores',
+		'page callback' => 'drupal_get_form',
+		'access callback' => TRUE,
+		'page arguments' => array('store_main_form',1),
+		'file' => 'store_main_form.admin.inc',
+		'file path' => drupal_get_path('module','custom_page').'/includes',
+	);
+	
+	$store = db_query("SELECT * FROM coupan_store");
+	foreach($store as $st){
+		
+		$title = $st->title.' Coupons';
+		if($st->meta_title != NULL){
+			$page_title = $st->meta_title;
+		}else{
+			$page_title = $title;
+		}
+		
+		$items['store/'.clean($st->url_alias)] = array(
+			'title' => $page_title,
+			'page callback' => 'drupal_get_form',
+			'access callback' => TRUE,
+			'page arguments' => array('store_coupan_form',$st->title),
+			'file' => 'store_coupan_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_page').'/includes',
+		);
+		
+	}
+	
+	$items['location'] = array(
+		'title' => 'Location',
+		'page callback' => 'drupal_get_form',
+		'access callback' => TRUE,
+		'page arguments' => array('location_main_form',1),
+		'file' => 'location_main_form.admin.inc',
+		'file path' => drupal_get_path('module','custom_page').'/includes',
+	);
+	
+	$location = db_query("SELECT * FROM coupan_location");
+	foreach($location as $loc){
+		
+		$title = $loc->title.' Coupons';
+		if($loc->meta_title != NULL){
+			$page_title = $loc->meta_title;
+		}else{
+			$page_title = $title;
+		}
+		
+		$items['location/'.clean($loc->url_alias)] = array(
+			'title' => $page_title,
+			'page callback' => 'drupal_get_form',
+			'access callback' => TRUE,
+			'page arguments' => array('location_coupan_form',$loc->title),
+			'file' => 'location_coupan_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_page').'/includes',
+		);
+		
+	}
+	
+	$query = db_query("SELECT * FROM coupan_loc_cat_url");
+	foreach($query as $q){
+		$loc_id = db_query("SELECT title FROM coupan_location WHERE lid=:lid;", array(':lid' => $q->lid));
+		foreach($loc_id as $l){
+			$location = clean($l->title);
+		}
+		$scid = db_query("SELECT url_alias FROM coupan_sub_category WHERE scid=:scid;", array(':scid' => $q->scid));
+		foreach($scid as $sc){
+			$sub_cat= clean($sc->url_alias);
+		}
+		
+		$title = $q->title;
+		if($q->meta_title != NULL){
+			$page_title = $q->meta_title;
+		}else{
+			$page_title = $title;
+		}
+		
+		$items['location/'.$location.'/'.$sub_cat] = array(
+			'title' => t($page_title),
+			'page callback' => 'drupal_get_form',
+			'access callback' => TRUE,
+			'page arguments' => array('loc_cat_url_form',1,2),
+			'file' => 'loc_cat_url_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_page').'/includes',
+		);
+	}
+	$query = db_query("SELECT * FROM coupan_loc_str_url");
+	foreach($query as $q){
+		$loc_id = db_query("SELECT title FROM coupan_location WHERE lid=:lid;", array(':lid' => $q->lid));
+		foreach($loc_id as $l){
+			$location = clean($l->title);
+		}
+		$sid = db_query("SELECT url_alias FROM coupan_store WHERE sid=:sid;", array(':sid' => $q->sid));
+		foreach($sid as $sc){
+			$str= clean($sc->url_alias);
+		}
+		
+		$title = $q->title;
+		if($q->meta_title != NULL){
+			$page_title = $q->meta_title;
+		}else{
+			$page_title = $title;
+		}
+		
+		$items['location/'.$location.'/'.$str] = array(
+			'title' => t($page_title),
+			'page callback' => 'drupal_get_form',
+			'access callback' => TRUE,
+			'page arguments' => array('loc_str_url_form',1,2),
+			'file' => 'loc_str_url_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_page').'/includes',
+		);
+	}
+	//dsm($items);
+	$items['bank'] = array(
+		'title' => 'Bank',
+		'page callback' => 'drupal_get_form',
+		'access callback' => TRUE,
+		'page arguments' => array('bank_main_form',1),
+		'file' => 'bank_main_form.admin.inc',
+		'file path' => drupal_get_path('module','custom_page').'/includes',
+	);
+	
+	$banks = db_query("SELECT * FROM coupan_bank");
+	foreach($banks as $bnk){
+		
+		$title = $bnk->title.' Coupons';
+		if($bnk->meta_title != NULL){
+			$page_title = $bnk->meta_title;
+		}else{
+			$page_title = $title;
+		}
+		
+		$items['bank/'.clean($bnk->url_alias)] = array(
+			'title' => $page_title,
+			'page callback' => 'drupal_get_form',
+			'access callback' => TRUE,
+			'page arguments' => array('bank_coupan_form',$bnk->title),
+			'file' => 'bank_coupan_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_page').'/includes',
+		);
+		
+	}
+	
+	$coupan = db_query("SELECT * FROM coupan");
+	foreach($coupan as $cpn){
+		
+		$items['coupon/'.$cpn->coupan_id] = array(
+			'title' => $cpn->title,
+			'page callback' => 'drupal_get_form',
+			'access callback' => TRUE,
+			'page arguments' => array('show_coupan_form',1),
+			'file' => 'show_coupan_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_page').'/includes',
+		);
+		
+		$items['comment/'.$cpn->coupan_id] = array(
+			'title' => 'Comment',
+			'page callback' => 'drupal_get_form',
+			'access callback' => TRUE,
+			'page arguments' => array('add_comment',1),
+			'file' => 'add_comment_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_page').'/includes',
+		);
+		
+	}
+	
+	
+	
+	
+	return $items;
+	
+}
+
+
+/**
+ *Supporting function to clean_string.........
+ */
+function clean($string) {
+	$string = strtolower($string);
+	$string = str_replace(' ', '-', $string); // Replaces all spaces with hyphens.
+	return $string;
+	return preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
+}
+
+function clean_reverse($string) {
+	$string = str_replace('-', ' ', $string); // Replaces all hyphens with spaces.
+	$string = ucwords(strtolower($string));
+	return $string;
+}

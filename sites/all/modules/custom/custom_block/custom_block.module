@@ -1,0 +1,158 @@
+<?php
+
+/**
+ *Implements hook_permission()
+ */
+function custom_block_permission(){
+  return array(
+    // 'client_register' => array(
+      // 'title' => t('Register a Client.'),
+      // 'description' => t('For both Client and Admin.'),
+    // ),
+	);
+}
+
+/**
+ *Calling the theme function for the form - hook_theme().
+ */
+function custom_block_theme() {
+  return array(
+    // 'pending_users_table' => array(
+      // // The renderable element is the form.
+      // 'render element' => 'form',
+    // ),
+	);
+}
+
+/**
+ *Implements hook_menu()
+ */
+function custom_block_menu(){
+	$items = array();
+	
+	$items['home/search/%'] = array(
+		'title' => 'Search',
+	  	'page callback' => 'drupal_get_form',
+		'page arguments' => array('home_search_form',2),
+		'access callback' => TRUE,
+		'type' => MENU_CALLBACK,
+		'file' => 'search_form.admin.inc',
+		'file path' => drupal_get_path('module','custom_block').'/includes',
+		'weight' => -8,
+	);
+	
+	$items['search/autocomplete'] = array(
+		'description' => t('A callback for autocomplete in search block'),
+		'page callback' => 'search_coupon_autocomplete',
+		'access callback' => TRUE,
+		'type' => MENU_CALLBACK,
+	);
+	
+	
+	return $items;
+	
+}
+
+/**
+ * Implements search_coupon_autocomplete function
+ */
+function search_coupon_autocomplete($string = ''){
+	global $user;
+	$matches = array();
+	
+	$query = db_query("SELECT coupan_category.title as a, coupan_sub_category.title as b, coupan_store.title as c FROM coupan_category, coupan_sub_category, coupan_store");
+	foreach($query as $q){
+		$autocomplete_string[] = $q->a;
+		$autocomplete_string[] = $q->b;
+		$autocomplete_string[] = $q->c;
+	}
+	
+	// $table = 'dental_order_table';
+	// $clients =  db_query(
+		// "SELECT * from {$table} where uid = :uid;", array(':uid' => $user->uid)
+	// );
+	// foreach($clients as $client){
+		// $autocomplete_string[] = $client->order_no;
+		// $autocomplete_string[] = $client->patient_name;
+		// $autocomplete_string[] = $client->order_date;
+		// $autocomplete_string[] = $client->due_date;
+	// }
+	
+	foreach($autocomplete_string as $phrases){
+		if(stristr($phrases, $string)){
+			$matches[$phrases] = $phrases;
+		}
+	}
+	
+	drupal_json_output($matches);
+}
+
+/**
+ *Implements hook_block_info()
+ */
+function custom_block_block_info(){
+	
+	$block['search_block'] = array(
+		'info' => t('Coupon Search Block'),
+		'cache' => DRUPAL_NO_CACHE,
+	);
+	
+	db_merge('block')
+  ->key(array('theme' => 'adminimal_theme', 'delta' => 'search_block', 'module' => 'custom_block'))
+  ->fields(array(
+    'region' => 'sidebar_left',
+    'pages' => 'home',
+    'status' => 1,
+    'visibility' => 1,
+		'title' => '<none>',
+  ))
+  ->execute();
+	
+	return $block;
+}
+
+
+/**
+ *Implements hook_block_view()
+ */
+function custom_block_block_view($delta = ''){
+	
+	$rid = array();
+	switch($delta){
+		case 'search_block' :
+				
+				$block['subject'] = 'Coupon Search Block';
+				$block['content'] = drupal_get_form('search_block_form');
+				return $block;
+			
+		break;
+	}
+	
+	return $form;
+}
+
+function search_block_form($form, &$form_state){
+	$form['search'] = array(
+		'#type' => 'textfield',
+		'#autocomplete_path' => 'search/autocomplete',
+		'#size' => 15,
+		'#attributes' => array('placeholder' => 'Search Coupons & Offers...'),
+		'#ajax' => array(
+			'event' => 'change',
+			'callback' => 'search_form_ajax',
+			'wrapper' => 'search_wrapper',
+			'method' => 'replace',
+			'effect' => 'fade',
+			'progress' => array('type' => 'none'),
+    		),
+	);
+	return $form;
+}
+function search_form_ajax($form, &$form_state){
+	ctools_include('ajax');
+	ctools_add_js('ajax-responder');
+	$commands[] = ctools_ajax_command_redirect('home/search/'.$form_state['values']['search']);
+	print ajax_render($commands);
+	drupal_exit();
+}
+

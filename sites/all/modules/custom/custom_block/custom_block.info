@@ -1,0 +1,6 @@
+name = Custom Blocks
+description = This Module creates custom block for the system.
+core = 7.x
+package = Custom Modules
+files[] = custom_block.module
+stylesheets[all][] = custom_block.css

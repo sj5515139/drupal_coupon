@@ -1,0 +1,734 @@
+<?php
+/**
+ *Implements hook_install
+ */
+function custom_data_install(){
+	if(!is_dir("public://coupan_category")){
+		mkdir("public://coupan_category");
+	}
+	if(!is_dir("public://coupan_sub_category")){
+		mkdir("public://coupan_sub_category");
+	}
+	if(!is_dir("public://coupan_store")){
+		mkdir("public://coupan_store");
+	}
+}
+
+/**
+ *Implements hook_schema
+ */
+function custom_data_schema(){
+
+  $schema['coupan_category'] = array(
+  'description' => 'TODO: please describe this table!',
+		'fields' => array(
+			'id' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+			),
+			'title' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'image_id' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '100'
+			),
+			'banner' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'description' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'translatable' => TRUE,
+			),
+			'content' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'translatable' => TRUE,
+			),
+			'meta_title' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_desc' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_keyword' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_canonical' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_robot' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'uid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'timestamp' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+    ),
+		'primary key' => array('id'),
+  );
+	
+	$schema['coupan_sub_category'] = array(
+  'description' => 'TODO: please describe this table!',
+		'fields' => array(
+			'scid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+			),
+			'cid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'title' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'image_id' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '100'
+			),
+			'banner' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'description' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'translatable' => TRUE,
+			),
+			'content' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'translatable' => TRUE,
+			),
+			'meta_title' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_desc' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_keyword' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_canonical' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_robot' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'uid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'timestamp' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+    ),
+		'primary key' => array('scid'),
+  );
+  
+  $schema['coupan_loc_cat_url'] = array(
+  'description' => 'TODO: please describe this table!',
+		'fields' => array(
+			'lcid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+			),
+			'title' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'lid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'scid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'image_id' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '100'
+			),
+			'banner' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'description' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'translatable' => TRUE,
+			),
+			'content' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'translatable' => TRUE,
+			),
+			'meta_title' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_desc' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_keyword' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_canonical' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_robot' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'uid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'timestamp' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+    ),
+		'primary key' => array('lcid'),
+  );
+	
+	$schema['coupan_loc_str_url'] = array(
+  'description' => 'TODO: please describe this table!',
+		'fields' => array(
+			'lsid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+			),
+			'title' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'lid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'sid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'image_id' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '100'
+			),
+			'banner' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'description' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'translatable' => TRUE,
+			),
+			'content' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'translatable' => TRUE,
+			),
+			'meta_title' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_desc' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_keyword' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_canonical' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_robot' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'uid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'timestamp' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+    ),
+		'primary key' => array('lsid'),
+  );
+	
+	$schema['coupan_store'] = array(
+  'description' => 'TODO: please describe this table!',
+		'fields' => array(
+			'sid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+			),
+			'cid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '1000'
+			),
+			'scid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '1000'
+			),
+			'title' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'link' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'image_id' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '100'
+			),
+			'banner' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'description' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'translatable' => TRUE,
+			),
+			'content' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'translatable' => TRUE,
+			),
+			'meta_title' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_desc' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_keyword' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_canonical' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_robot' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'uid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'timestamp' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+    ),
+		'primary key' => array('sid'),
+  );
+	
+	$schema['coupan'] = array(
+  'description' => 'TODO: please describe this table!',
+		'fields' => array(
+			'coupan_id' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+			),
+			'cid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '1000'
+			),
+			'scid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '1000'
+			),
+			'sid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '1000'
+			),
+			'offer' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'title' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'type' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'code' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'start_date' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'end_date' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'description' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'translatable' => TRUE,
+			),
+			'uid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'timestamp' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'likes' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'comment' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'lid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'bid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'cpn_url' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '500'
+			),
+    ),
+		'primary key' => array('coupon_id'),
+  );
+	
+	$schema['coupan_location'] = array(
+  'description' => 'TODO: please describe this table!',
+		'fields' => array(
+			'lid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+			),
+			'title' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'image_id' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '100'
+			),
+			'banner' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'description' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'translatable' => TRUE,
+			),
+			'content' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'translatable' => TRUE,
+			),
+			'meta_title' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_desc' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_keyword' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_canonical' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_robot' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'uid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'timestamp' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+    ),
+		'primary key' => array('lid'),
+  );
+	
+	$schema['coupan_bank'] = array(
+  'description' => 'TODO: please describe this table!',
+		'fields' => array(
+			'bid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+			),
+			'title' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'image_id' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '100'
+			),
+			'banner' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'description' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'translatable' => TRUE,
+			),
+			'content' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'translatable' => TRUE,
+			),
+			'meta_title' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_desc' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_keyword' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_canonical' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'meta_robot' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'uid' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'timestamp' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+    ),
+		'primary key' => array('bid'),
+  );
+  
+  $schema['coupan_comment'] = array(
+  	'description' => 'TODO: please describe this table!',
+		'fields' => array(
+			'id' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'serial',
+			        'unsigned' => TRUE,
+			        'not null' => TRUE,
+			),
+			'coupon_id' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'int',
+				'length' => '11'
+			),
+			'name' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'email' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'varchar',
+				'length' => '255'
+			),
+			'comment' => array(
+				'description' => 'TODO: please describe this field!',
+				'type' => 'text',
+			),
+    	),
+		'primary key' => array('id'),
+  );
+	
+	return $schema;
+}

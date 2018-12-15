@@ -1,0 +1,523 @@
+<?php
+
+/**
+ *Implements hook_permission()
+ */
+function custom_data_permission(){
+  return array(
+    'add_coupan' => array(
+      'title' => t('Add Coupans.'),
+      'description' => t('For Admin Only.'),
+    ),
+	);
+}
+
+/**
+ *Calling the theme function for the form - hook_theme().
+ */
+function custom_data_theme() {
+  return array(
+    // 'pending_users_table' => array(
+      // // The renderable element is the form.
+      // 'render element' => 'form',
+    // ),
+		'image_upload_preview' => array(
+			'render element' => 'element',
+			'file' => 'custom_data.module',
+		),		
+	);
+}
+
+/**
+ *Implements hook_menu()
+ */
+function custom_data_menu(){
+  $items = array();
+	
+	//Coupons Menus Items...................................................................
+	$items['admin/coupan'] = array(
+	  'title' => t('Coupon'),
+	  'description' => t('Manage all data for the coupans.'),
+	  'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('coupan_main_form'),
+		'file' => 'coupan_main_form.admin.inc',
+    'file path' => drupal_get_path('module','custom_data').'/includes/coupon',
+	);
+	
+	$items['admin/coupan/add_coupan'] = array(
+	  'title' => t('Add Coupon'),
+	  'description' => t('Add coupans.'),
+	  'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('add_coupan_form'),
+		'type' => MENU_LOCAL_ACTION,
+		'file' => 'add_coupon_form.admin.inc',
+    'file path' => drupal_get_path('module','custom_data').'/includes/coupon',
+	);
+	
+	$query = db_query("SELECT * FROM coupan");
+	foreach($query as $q){
+		$items['admin/coupan/edit_coupan/'.$q->coupan_id] = array(
+			'title' => t('Edit '.$q->title),
+			'description' => t('Edit coupans.'),
+			'page callback' => 'drupal_get_form',
+			'access arguments' => array('add_coupan'),
+			'page arguments' => array('edit_coupan_form',3),
+			'type' => MENU_CALLBACK,
+			'file' => 'edit_coupon_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_data').'/includes/coupon',
+		);
+		
+		$items['admin/coupan/delete_coupan/'.$q->coupan_id] = array(
+			'title' => t('Delete '.$q->title),
+			'description' => t('Delete coupans.'),
+			'page callback' => 'drupal_get_form',
+			'access arguments' => array('add_coupan'),
+			'page arguments' => array('delete_coupan_form',3),
+			'type' => MENU_CALLBACK,
+			'file' => 'delete_coupon_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_data').'/includes/coupon',
+		);
+	}
+	
+	$items['delete_coupan'] = array(
+		'title' => 'Confirm Delete',
+		'page callback' => 'delete_coupan_pagecallback',
+		'access arguments' => array('add_coupan'),
+		'file' => 'delete_coupon_form.admin.inc',
+		'file path' => drupal_get_path('module','custom_data').'/includes/coupon',
+		'type' => MENU_CALLBACK,
+	);
+	
+	//Category Menus Items...................................................................
+	$items['admin/coupan/category'] = array(
+	  'title' => t('Category'),
+	  'description' => t('All category for the coupans.'),
+	  'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('category_main_form'),
+		'file' => 'category_main_form.admin.inc',
+    'file path' => drupal_get_path('module','custom_data').'/includes/category',
+	);
+	
+	$items['admin/coupan/category/add_category'] = array(
+	  'title' => t('Add Category'),
+	  'description' => t('Add category for the coupans.'),
+	  'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('add_category_form'),
+		'type' => MENU_LOCAL_ACTION,
+		'file' => 'add_category_form.admin.inc',
+    'file path' => drupal_get_path('module','custom_data').'/includes/category',
+	);
+	
+	$query = db_query("SELECT * FROM coupan_category");
+	foreach($query as $q){
+		$items['admin/coupan/category/edit_category/'.$q->id] = array(
+			'title' => t('Edit '.$q->title),
+			'description' => t('Edit category for the coupans.'),
+			'page callback' => 'drupal_get_form',
+			'access arguments' => array('add_coupan'),
+			'page arguments' => array('edit_category_form',4),
+			'type' => MENU_CALLBACK,
+			'file' => 'edit_category_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_data').'/includes/category',
+		);
+		
+		$items['admin/coupan/category/delete_category/'.$q->id] = array(
+			'title' => t('Delete '.$q->title),
+			'description' => t('Edit category for the coupans.'),
+			'page callback' => 'drupal_get_form',
+			'access arguments' => array('add_coupan'),
+			'page arguments' => array('delete_category_form',4),
+			'type' => MENU_CALLBACK,
+			'file' => 'delete_category_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_data').'/includes/category',
+		);
+	}
+	
+	$items['delete_category'] = array(
+		'title' => 'Confirm Delete',
+		'page callback' => 'delete_category_pagecallback',
+		'access arguments' => array('add_coupan'),
+		'file' => 'delete_category_form.admin.inc',
+		'file path' => drupal_get_path('module','custom_data').'/includes/category',
+		'type' => MENU_CALLBACK,
+	);
+	
+	//Sub - Category Menus Items...................................................................
+	$items['admin/coupan/sub_category'] = array(
+	  'title' => t('Sub-Category'),
+	  'description' => t('All Sub-category for the coupans.'),
+	  'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('sub_category_main_form'),
+		'file' => 'sub_category_main_form.admin.inc',
+    'file path' => drupal_get_path('module','custom_data').'/includes/sub_category',
+	);
+	
+	$items['admin/coupan/sub_category/add_sub_category'] = array(
+	  'title' => t('Add Sub-Category'),
+	  'description' => t('Add Sub-category for the coupans.'),
+	  'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('add_sub_category_form'),
+		'type' => MENU_LOCAL_ACTION,
+		'file' => 'add_sub_category_form.admin.inc',
+    'file path' => drupal_get_path('module','custom_data').'/includes/sub_category',
+	);
+	
+	$query = db_query("SELECT * FROM coupan_sub_category");
+	foreach($query as $q){
+		$items['admin/coupan/sub_category/edit_sub_category/'.$q->scid] = array(
+			'title' => t('Edit '.$q->title),
+			'description' => t('Edit sub-category for the coupans.'),
+			'page callback' => 'drupal_get_form',
+			'access arguments' => array('add_coupan'),
+			'page arguments' => array('edit_sub_category_form',4),
+			'type' => MENU_CALLBACK,
+			'file' => 'edit_sub_category_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_data').'/includes/sub_category',
+		);
+		
+		$items['admin/coupan/sub_category/delete_sub_category/'.$q->scid] = array(
+			'title' => t('Delete '.$q->title),
+			'description' => t('Edit sub-category for the coupans.'),
+			'page callback' => 'drupal_get_form',
+			'access arguments' => array('add_coupan'),
+			'page arguments' => array('delete_sub_category_form',4),
+			'type' => MENU_CALLBACK,
+			'file' => 'delete_sub_category_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_data').'/includes/sub_category',
+		);
+	}
+	
+	$items['delete_sub_category'] = array(
+		'title' => 'Confirm Delete',
+		'page callback' => 'delete_sub_category_pagecallback',
+		'access arguments' => array('add_coupan'),
+		'file' => 'delete_sub_category_form.admin.inc',
+		'file path' => drupal_get_path('module','custom_data').'/includes/sub_category',
+		'type' => MENU_CALLBACK,
+	);
+	
+	// Cat Loc Url Items
+	$items['admin/coupan/loc_cat_url'] = array(
+	  'title' => t('Location Category Url'),
+	  'description' => t('Add Sub-Category Location Url for the coupans.'),
+	  'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('loc_cat_url'),
+		'file' => 'loc_cat_url_main_form.admin.inc',
+    'file path' => drupal_get_path('module','custom_data').'/includes/loc_cat_url',
+	);
+	
+	$items['admin/coupan/loc_cat_url/add_loc_cat_url'] = array(
+	  'title' => t('Add Url'),
+	  'description' => t('Add Location Sub-Category Url for the coupans.'),
+	  'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('add_loc_cat_url'),
+		'type' => MENU_LOCAL_ACTION,
+		'file' => 'add_loc_cat_url.admin.inc',
+    'file path' => drupal_get_path('module','custom_data').'/includes/loc_cat_url',
+	);	
+	
+	$query = db_query("SELECT * FROM coupan_loc_cat_url");
+	foreach($query as $q){
+			
+		$items['admin/coupan/loc_cat_url/edit_loc_cat_url/'.$q->lcid] = array(
+			'title' => t('Edit '.$q->title),
+			'description' => t('Edit Location Sub-Category Url for the coupans.'),
+			'page callback' => 'drupal_get_form',
+			'access arguments' => array('add_coupan'),
+			'page arguments' => array('edit_loc_cat_url',4),
+			'type' => MENU_CALLBACK,
+			'file' => 'edit_loc_cat_url.admin.inc',
+			'file path' => drupal_get_path('module','custom_data').'/includes/loc_cat_url',
+		);
+		
+		$items['admin/coupan/loc_cat_url/delete_loc_cat_url/'.$q->lcid] = array(
+			'title' => t('Delete '.$q->title),
+			'description' => t('Delete Location Sub-Category Url for the coupans.'),
+			'page callback' => 'drupal_get_form',
+			'access arguments' => array('add_coupan'),
+			'page arguments' => array('delete_loc_cat_url',4),
+			'type' => MENU_CALLBACK,
+			'file' => 'delete_loc_cat_url.admin.inc',
+			'file path' => drupal_get_path('module','custom_data').'/includes/loc_cat_url',
+		);
+	}
+	
+	$items['delete_loc_cat_url'] = array(
+		'title' => 'Confirm Delete',
+		'page callback' => 'delete_loc_cat_url_pagecallback',
+		'access arguments' => array('add_coupan'),
+		'file' => 'delete_loc_cat_url.admin.inc',
+		'file path' => drupal_get_path('module','custom_data').'/includes/loc_cat_url',
+		'type' => MENU_CALLBACK,
+	);
+	
+	// Store Loc Url Items
+	$items['admin/coupan/loc_str_url'] = array(
+	  'title' => t('Location Store Url'),
+	  'description' => t('Add Store Location Url for the coupans.'),
+	  'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('loc_str_url'),
+		'file' => 'loc_str_url_main_form.admin.inc',
+    'file path' => drupal_get_path('module','custom_data').'/includes/loc_str_url',
+	);
+	
+	$items['admin/coupan/loc_str_url/add_loc_str_url'] = array(
+	  'title' => t('Add Url'),
+	  'description' => t('Add Location Store Url for the coupans.'),
+	  'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('add_loc_str_url'),
+		'type' => MENU_LOCAL_ACTION,
+		'file' => 'add_loc_str_url.admin.inc',
+    'file path' => drupal_get_path('module','custom_data').'/includes/loc_str_url',
+	);	
+	
+	$query = db_query("SELECT * FROM coupan_loc_str_url");
+	foreach($query as $q){
+			
+		$items['admin/coupan/loc_str_url/edit_loc_str_url/'.$q->lsid] = array(
+			'title' => t('Edit '.$q->title),
+			'description' => t('Edit Location Store Url for the coupans.'),
+			'page callback' => 'drupal_get_form',
+			'access arguments' => array('add_coupan'),
+			'page arguments' => array('edit_loc_str_url',4),
+			'type' => MENU_CALLBACK,
+			'file' => 'edit_loc_str_url.admin.inc',
+			'file path' => drupal_get_path('module','custom_data').'/includes/loc_str_url',
+		);
+		
+		$items['admin/coupan/loc_str_url/delete_loc_str_url/'.$q->lsid] = array(
+			'title' => t('Delete '.$q->title),
+			'description' => t('Delete Location Store Url for the coupans.'),
+			'page callback' => 'drupal_get_form',
+			'access arguments' => array('add_coupan'),
+			'page arguments' => array('delete_loc_str_url',4),
+			'type' => MENU_CALLBACK,
+			'file' => 'delete_loc_str_url.admin.inc',
+			'file path' => drupal_get_path('module','custom_data').'/includes/loc_str_url',
+		);
+	}
+	
+	$items['delete_loc_str_url'] = array(
+		'title' => 'Confirm Delete',
+		'page callback' => 'delete_loc_str_url_pagecallback',
+		'access arguments' => array('add_coupan'),
+		'file' => 'delete_loc_str_url.admin.inc',
+		'file path' => drupal_get_path('module','custom_data').'/includes/loc_str_url',
+		'type' => MENU_CALLBACK,
+	);
+	
+	//Store Menus Items...................................................................
+	$items['admin/coupan/store'] = array(
+	  'title' => t('Store'),
+	  'description' => t('All Store for the coupans.'),
+	  'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('store_main_form'),
+		'file' => 'store_main_form.admin.inc',
+    'file path' => drupal_get_path('module','custom_data').'/includes/store',
+	);
+	
+	$items['admin/coupan/store/add_store'] = array(
+	  'title' => t('Add Store'),
+	  'description' => t('Add Store for the coupans.'),
+	  'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('add_store_form'),
+		'type' => MENU_LOCAL_ACTION,
+		'file' => 'add_store_form.admin.inc',
+    'file path' => drupal_get_path('module','custom_data').'/includes/store',
+	);
+	
+	$query = db_query("SELECT * FROM coupan_store");
+	foreach($query as $q){
+		$items['admin/coupan/store/edit_store/'.$q->sid] = array(
+			'title' => t('Edit '.$q->title),
+			'description' => t('Edit Store for the coupans.'),
+			'page callback' => 'drupal_get_form',
+			'access arguments' => array('add_coupan'),
+			'page arguments' => array('edit_store_form',4),
+			'type' => MENU_CALLBACK,
+			'file' => 'edit_store_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_data').'/includes/store',
+		);
+		
+		$items['admin/coupan/store/delete_store/'.$q->sid] = array(
+			'title' => t('Delete '.$q->title),
+			'description' => t('Edit Store for the coupans.'),
+			'page callback' => 'drupal_get_form',
+			'access arguments' => array('add_coupan'),
+			'page arguments' => array('delete_store_form',4),
+			'type' => MENU_CALLBACK,
+			'file' => 'delete_store_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_data').'/includes/store',
+		);
+	}
+	
+	$items['delete_store'] = array(
+		'title' => 'Confirm Delete',
+		'page callback' => 'delete_store_pagecallback',
+		'access arguments' => array('add_coupan'),
+		'file' => 'delete_store_form.admin.inc',
+		'file path' => drupal_get_path('module','custom_data').'/includes/store',
+		'type' => MENU_CALLBACK,
+	);
+	
+	//Location Menus Items...................................................................
+	$items['admin/coupan/location'] = array(
+	  'title' => t('Location'),
+	  'description' => t('All Locations for the coupans.'),
+	  'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('location_main_form'),
+		'file' => 'location_main_form.admin.inc',
+    'file path' => drupal_get_path('module','custom_data').'/includes/location',
+	);
+	
+	$items['admin/coupan/location/add_location'] = array(
+	  'title' => t('Add Location'),
+	  'description' => t('Add Location for the coupans.'),
+	  'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('add_location_form'),
+		'type' => MENU_LOCAL_ACTION,
+		'file' => 'add_location_form.admin.inc',
+    'file path' => drupal_get_path('module','custom_data').'/includes/location',
+	);
+	
+	$query = db_query("SELECT * FROM coupan_location");
+	foreach($query as $q){
+		$items['admin/coupan/location/edit_location/'.$q->lid] = array(
+			'title' => t('Edit '.$q->title),
+			'description' => t('Edit location for the coupans.'),
+			'page callback' => 'drupal_get_form',
+			'access arguments' => array('add_coupan'),
+			'page arguments' => array('edit_location_form',4),
+			'type' => MENU_CALLBACK,
+			'file' => 'edit_location_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_data').'/includes/location',
+		);
+		
+		$items['admin/coupan/location/delete_location/'.$q->lid] = array(
+			'title' => t('Delete '.$q->title),
+			'description' => t('Edit Location for the coupans.'),
+			'page callback' => 'drupal_get_form',
+			'access arguments' => array('add_coupan'),
+			'page arguments' => array('delete_location_form',4),
+			'type' => MENU_CALLBACK,
+			'file' => 'delete_location_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_data').'/includes/location',
+		);
+	}
+	
+	$items['delete_location'] = array(
+		'title' => 'Confirm Delete',
+		'page callback' => 'delete_location_pagecallback',
+		'access arguments' => array('add_coupan'),
+		'file' => 'delete_location_form.admin.inc',
+		'file path' => drupal_get_path('module','custom_data').'/includes/location',
+		'type' => MENU_CALLBACK,
+	);
+	
+	//Banks Menus Items...................................................................
+	$items['admin/coupan/bank'] = array(
+	  'title' => t('Bank'),
+	  'description' => t('All Bank for the coupans.'),
+	  'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('bank_main_form'),
+		'file' => 'bank_main_form.admin.inc',
+    'file path' => drupal_get_path('module','custom_data').'/includes/bank',
+	);
+	
+	$items['admin/coupan/bank/add_bank'] = array(
+	  'title' => t('Add Bank'),
+	  'description' => t('Add Bank for the coupans.'),
+	  'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('add_bank_form'),
+		'type' => MENU_LOCAL_ACTION,
+		'file' => 'add_bank_form.admin.inc',
+    'file path' => drupal_get_path('module','custom_data').'/includes/bank',
+	);
+	
+	$query = db_query("SELECT * FROM coupan_bank");
+	foreach($query as $q){
+		$items['admin/coupan/bank/edit_bank/'.$q->bid] = array(
+			'title' => t('Edit '.$q->title),
+			'description' => t('Edit bank for the coupans.'),
+			'page callback' => 'drupal_get_form',
+			'access arguments' => array('add_coupan'),
+			'page arguments' => array('edit_bank_form',4),
+			'type' => MENU_CALLBACK,
+			'file' => 'edit_bank_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_data').'/includes/bank',
+		);
+		
+		$items['admin/coupan/bank/delete_bank/'.$q->bid] = array(
+			'title' => t('Delete '.$q->title),
+			'description' => t('Edit Bank for the coupans.'),
+			'page callback' => 'drupal_get_form',
+			'access arguments' => array('add_coupan'),
+			'page arguments' => array('delete_bank_form',4),
+			'type' => MENU_CALLBACK,
+			'file' => 'delete_bank_form.admin.inc',
+			'file path' => drupal_get_path('module','custom_data').'/includes/bank',
+		);
+	}
+	
+	$items['delete_bank'] = array(
+		'title' => 'Confirm Delete',
+		'page callback' => 'delete_bank_pagecallback',
+		'access arguments' => array('add_coupan'),
+		'file' => 'delete_bank_form.admin.inc',
+		'file path' => drupal_get_path('module','custom_data').'/includes/bank',
+		'type' => MENU_CALLBACK,
+	);
+	
+	$items['admin/coupan/homepage_setting'] = array(
+		'title' => t('Homepage Setting'),
+		'description' => t('Settings for homepage'),
+		'page callback' => 'drupal_get_form',
+		'access arguments' => array('add_coupan'),
+		'page arguments' => array('homepage_setting_form'),
+		'file' => 'homepage_setting_form.admin.inc',
+		'file path' => drupal_get_path('module','custom_data').'/includes',
+	);
+	
+	return $items;
+	
+}
+function theme_image_upload_preview($variables) {
+
+	$element = $variables['element'];
+
+	if (isset($element['#file']->uri)) {
+		$output = '<div id="edit-logo-ajax-wrapper"><div class="form-item form-type-managed-file form-item-logo"><span class="file">';
+		$output .= '<img height="50px" src="' . file_create_url($element['#file']->uri) . '" />';
+		$output .= '</span><input type="submit" id="edit-' . $element['#name'] . '-remove-button" name="' . $element['#name'] . '_remove_button" value="Remove" class="form-submit ajax-processed">';
+		$output .= '<input type="hidden" name="' . $element['#name'] . '[fid]" value="' . $element['#file']->fid . '">';
+
+		return $output;
+	}
+}
+
+/**
+* Altering Date Popup to remove labels and description for specific field
+*/
+function custom_data_date_popup_process_alter(&$element, &$form_state, $context) {
+  unset($element['date']['#description']);
+  unset($element['date']['#title']);
+	unset($element['time']['#title']);
+	unset($element['time']['#description']);
+  return $element;   
+}

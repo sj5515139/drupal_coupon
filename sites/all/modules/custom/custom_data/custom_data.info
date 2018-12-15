@@ -1,0 +1,6 @@
+name = Custom Data
+description = This Module creates and store custom data for the system.
+core = 7.x
+package = Custom Modules
+files[] = custom_data.module
+stylesheets[all][] = custom_data.css

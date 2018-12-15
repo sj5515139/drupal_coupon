@@ -1,0 +1,7 @@
+name = Coupon Bulk Upload
+description = This Module helps to enter coupons data in bulk.
+core = 7.x
+dependencies[] = custom_data
+package = Custom Modules
+files[] = coupon_bulk_upload.module
+stylesheets[all][] = coupon_bulk_upload.css

@@ -1,0 +1,8 @@
+name = View Expose Tables
+description = Exposes DB tables to Views
+core = 7.x
+package = Custom Modules
+dependencies[] = views
+
+files[] = view_expose_tables.module
+files[] = view_expose_tables.views.inc

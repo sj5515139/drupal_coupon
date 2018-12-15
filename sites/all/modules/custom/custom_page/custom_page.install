@@ -1,0 +1,15 @@
+<?php
+/**
+ *Implements hook_install
+ */
+function custom_page_install(){
+	
+}
+
+/**
+ *Implements hook_schema
+ */
+function custom_page_schema(){
+	
+	//return $schema;
+}
